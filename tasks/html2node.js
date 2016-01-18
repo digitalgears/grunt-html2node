@@ -1,0 +1,50 @@
+/*
+ * grunt-html2node
+ * https://github.com/digitalgears/grunt-html2node
+ *
+ * Copyright (c) 2016 Toby Summerfield
+ * Licensed under the MIT license.
+ */
+
+'use strict';
+
+module.exports = function(grunt) {
+
+  // Please see the Grunt documentation for more information regarding task
+  // creation: http://gruntjs.com/creating-tasks
+
+  grunt.registerMultiTask('html2node', 'Takes an html file and returns a node module exporting an es6 multi line string.', function() {
+    var done = this.async();
+    var index = 0;
+    var count = this.files.length;
+
+    // Iterate over all specified file groups.
+    this.files.forEach(function(f) {
+
+      var filepath = f.src.toString();
+      if (typeof filepath !== 'string' || filepath === '') {
+        grunt.log.error('src must be a single string');
+        return false;
+      }
+
+      if (!grunt.file.exists(filepath)) {
+        grunt.log.error('Source file "' + filepath + '" not found.');
+        return false;
+      }
+
+      var html = grunt.file.read(filepath);
+
+      html = 'module.exports = `' + html + '`;';
+
+      grunt.file.write(f.dest, html);
+      grunt.log.writeln('File "' + f.dest + '" created.');
+
+
+      index++;
+      if (index === count) {
+        done();
+      }
+    });
+  });
+
+};
